@@ -8,7 +8,7 @@ from .models import Character
 # from .serializers import CharacterSerializer, LineSerializer
 from .serializers import CharacterSerializer
 from .data_loader import load_csv_to_database
-from .text_to_sentiment import predict, pred
+from .text_to_sentiment import predict
 
 # Create your views here.
 def home(request):

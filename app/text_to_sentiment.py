@@ -86,39 +86,3 @@ def predict():
             name_temp = row['raw_character_text']
             vec_temp = row['sentiment']
             times = 1
-
-        
-    
-     
-
-
-def pred():
-    lines, characters = prep_dataframes()
-    lines_text = lines['spoken_words']
-
-    
-    sample_lines = lines.head(10)
-    sample_lines_text = sample_lines['spoken_words']
-
-    sample_characters = pandas.DataFrame({'raw_character_text':sample_lines.raw_character_text.unique()})
-    sample_characters['sentiment'] = numpy.full_like(sample_characters['raw_character_text'], '')
-    sample_characters['number_of_lines'] = numpy.zeros_like(sample_characters['sentiment'])
-    # for index, row in sample_lines.iterrows():
-    with open('text_to_sentiment/tokenizer.pickle', 'rb') as handle:
-        tokenizer = pickle.load(handle)
-
-    sequences_test = tokenizer.texts_to_sequences(sample_lines_text)
-    data_int_t = pad_sequences(sequences_test, padding='pre', maxlen=(MAX_SEQUENCE_LENGTH-5))
-    data_test = pad_sequences(data_int_t, padding='post', maxlen=(MAX_SEQUENCE_LENGTH))
-    y_prob = model.predict(data_test, verbose='1')
-
-    for n, prediction in enumerate(y_prob):
-        pred = y_prob.argmax(axis=-1)[n]
-        sample_lines.at[n, 'sentiment'] = prediction
-
-    sample_lines.sort_values(by=['raw_character_text'])
-
-    # name_temp = ''
-
-    # for n, line in enumerate(sample_lines):
-    #     if(line['raw_character_text'] == name_temp):
