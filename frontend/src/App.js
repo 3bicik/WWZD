@@ -13,41 +13,6 @@ function App() {
     const [selected, setSelected] = useState(0  )
     const [chartData, setChartData] = useState(null)
 
-    const characters = [
-        {
-            id: 0,
-            name: 'Character A',
-            sentiment: {
-                happy: 0.14,
-                angry: 0.28,
-                surprise: 0.54,
-                sad: 0.12,
-                fear: 0.32
-            }
-        },
-        {
-            id: 1,
-            name: 'Character B',
-            sentiment: {
-                happy: 0.44,
-                angry: 0.48,
-                surprise: 0.14,
-                sad: 0.15,
-                fear: 0.12
-            },
-        },
-        {
-            id: 2,
-            name: 'Character C',
-            sentiment: {
-                happy: 0.74,
-                angry: 0.28,
-                surprise: 0.34,
-                sad: 0.05,
-                fear: 0.22
-            }
-        },
-    ]
 
     useEffect(() =>{
         axios.get('http://127.0.0.1:8000/app/characters/').then(res =>{
@@ -60,7 +25,7 @@ function App() {
             console.log('1', state.filter(el => el.id == selected)[0].sentiment)
             setChartData(
             {
-        labels: ['happy', 'angry', 'surprise', 'sad', 'fear'],
+        labels: ["Neutral", "Happy", "Sad", "Love", "Anger"],
         datasets: [{
             label: '# of Votes',
             data: state.filter(el => el.id == selected)[0].sentiment,
