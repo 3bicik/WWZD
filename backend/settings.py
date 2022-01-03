@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-_ldt$cc9=nx8zkw0^n)4b3&p9-@w8=jzx51@w16!j#ft8zskz5
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+CORS_ORIGIN_ALLOW_ALL=True
 
 # Application definition
 
@@ -42,9 +42,13 @@ INSTALLED_APPS = [
     'pandas',
 
     'app',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

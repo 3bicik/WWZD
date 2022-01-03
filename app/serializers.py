@@ -5,6 +5,7 @@ from .models import Character
 class CharacterSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
+            'id',
             'name',
             'sentiment',
             'number_of_lines'
