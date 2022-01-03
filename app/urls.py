@@ -3,10 +3,9 @@ from . import views
 
 urlpatterns = [
     path('home/', views.home),
-    path('load/', views.load_data),
-    path('pred/', views.test_predict),
+    path('pred/', views.whole_predict),
+    path('test_pred/', views.test_predict),
+    path('json/', views.get_json),
     path('characters/', views.ListCharacters.as_view()),
     path('characters/<int:pk>/', views.DetailCharacter.as_view()),
-    # path('lines/', views.ListLines.as_view()),
-    # path('lines/<int:pk>/', views.DetailLine.as_view()),
 ]

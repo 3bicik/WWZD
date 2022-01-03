@@ -7,7 +7,6 @@ import itertools, pickle
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 
-# from .models import Character, Line
 from .models import Character
 
 MAX_NB_WORDS = 56000 # max no. of words for tokenizer
@@ -18,62 +17,34 @@ model = keras.models.load_model("text_to_sentiment/checkpoint-0.6017.h5")
 classes = ["Neutral", "Happy", "Sad", "Love", "Anger"]
 
 
-def prep_dataframes():
+def prep_lines_dataframe():
     lines = pandas.read_csv('data/simpsons_dataset.csv')
-    sentiment = numpy.zeros(len(lines))
+    sentiment = numpy.zeros((len(lines),5))
     lines['sentiment'] = sentiment.tolist()
     lines['raw_character_text'] = lines['raw_character_text'].astype(str)
     lines['spoken_words'] = lines['spoken_words'].astype(str)
     lines['sentiment'] = lines['sentiment'].astype(object)
 
-    characters = pandas.DataFrame({'raw_character_text':lines.raw_character_text.unique()})
-    sentiment = numpy.zeros((len(characters),5))
-    characters['sentiment'] = sentiment.tolist()
-    number_of_lines = numpy.zeros((len(characters),1))
-    characters['number_of_lines'] = number_of_lines.tolist()
-    characters['sentiment'] = characters['sentiment'].astype(object)
-    characters['number_of_lines'] = characters['number_of_lines'].astype(object)
+    return lines
 
-    return lines, characters
-
-
-
-def predict():
-    lines, characters = prep_dataframes()
-    lines_text = lines['spoken_words']
-    
-    sample_lines = lines.head(10)
-    sample_lines_text = sample_lines['spoken_words']
-
-    sample_characters = pandas.DataFrame({'raw_character_text':sample_lines.raw_character_text.unique()})
-    sentiment = numpy.zeros((len(sample_characters),5))
-    sample_characters['sentiment'] = sentiment.tolist()
-    number_of_lines = numpy.zeros((len(sample_characters),1))
-    sample_characters['number_of_lines'] = number_of_lines.tolist()
-    sample_characters['sentiment'] = sample_characters['sentiment'].astype('object')
-    sample_characters['number_of_lines'] = sample_characters['number_of_lines'].astype('object')
-
+def process_data(lines):
     with open('text_to_sentiment/tokenizer.pickle', 'rb') as handle:
         tokenizer = pickle.load(handle)
 
-    sequences_test = tokenizer.texts_to_sequences(sample_lines_text)
+    lines_text = lines['spoken_words']
+
+    sequences_test = tokenizer.texts_to_sequences(lines_text)
     data_int_t = pad_sequences(sequences_test, padding='pre', maxlen=(MAX_SEQUENCE_LENGTH-5))
     data_test = pad_sequences(data_int_t, padding='post', maxlen=(MAX_SEQUENCE_LENGTH))
-    y_prob = model.predict(data_test, verbose='1')
+    return model.predict(data_test, verbose='1')
 
-    for n, prediction in enumerate(y_prob):
-        pred = y_prob.argmax(axis=-1)[n]
-        sample_lines.at[n, 'sentiment'] = prediction
 
-    sample_lines.sort_values(by=['raw_character_text'])  
-
+def calculate_averages(lines, threshold):
     name_temp = ''
     vec_temp = numpy.zeros(5)
     times = 0
 
-    Character.objects.all().delete()
-
-    for index, row in sample_lines.sort_values(by=['raw_character_text']).iterrows():
+    for index, row in lines.sort_values(by=['raw_character_text']).iterrows():
         if(index == 0):
             name_temp = row['raw_character_text']
         
@@ -81,8 +52,28 @@ def predict():
             vec_temp += row['sentiment']
             times += 1
         else:
-            Character(name=name_temp, sentiment=vec_temp/times, number_of_lines=times).save()
-
+            if(times >= threshold):
+                Character(name=name_temp, sentiment=vec_temp/times, number_of_lines=times).save()
             name_temp = row['raw_character_text']
             vec_temp = row['sentiment']
             times = 1
+
+
+def predict():
+    lines = prep_lines_dataframe()
+    y_prob = process_data(lines)
+
+    for n, prediction in enumerate(y_prob):
+        lines.at[n, 'sentiment'] = prediction
+
+    calculate_averages(lines.sort_values(by=['raw_character_text']), 200)
+
+def sample_predict():
+    sample_lines = prep_lines_dataframe().head(200)
+    y_prob = process_data(sample_lines)
+
+    for n, prediction in enumerate(y_prob):
+        sample_lines.at[n, 'sentiment'] = prediction
+
+    calculate_averages(sample_lines.sort_values(by=['raw_character_text']), 5)
+

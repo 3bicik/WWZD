@@ -3,24 +3,30 @@ from django.http import HttpResponse
 
 from rest_framework import generics
 
-# from .models import Character, Line
 from .models import Character
-# from .serializers import CharacterSerializer, LineSerializer
 from .serializers import CharacterSerializer
-from .data_loader import load_csv_to_database
-from .text_to_sentiment import predict
+from .text_to_sentiment import predict, sample_predict
+
+from django.core import serializers
 
 # Create your views here.
 def home(request):
     return HttpResponse('HOME')
 
-def load_data(request):
-    load_csv_to_database()
-    return HttpResponse('Loading records from csv to database')
+def whole_predict(request):
+    Character.objects.all().delete()
+    predict()
+    return get_json(request)
 
 def test_predict(request):
-    predict()
-    return HttpResponse('Predicting sample data')
+    Character.objects.all().delete()
+    sample_predict()
+    return get_json(request)
+
+def get_json(request):
+    objects = Character.objects.all()
+    data = serializers.serialize('json', objects)
+    return HttpResponse(data, content_type='application/json')
 
 class ListCharacters(generics.ListCreateAPIView):
     queryset = Character.objects.all()
@@ -30,12 +36,3 @@ class ListCharacters(generics.ListCreateAPIView):
 class DetailCharacter(generics.RetrieveUpdateDestroyAPIView):
     queryset = Character.objects.all()
     serializer_class = CharacterSerializer
-    
-# class ListLines(generics.ListCreateAPIView):
-#     queryset = Line.objects.all()
-#     serializer_class = LineSerializer
-
-
-# class DetailLine(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Line.objects.all()
-#     serializer_class = LineSerializer
