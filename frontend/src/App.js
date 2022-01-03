@@ -57,13 +57,13 @@ function App() {
             }
         )
         if(state && selected){
-            console.log('1', state.filter(el => el.id = selected)[0].personality)
+            console.log('1', state.filter(el => el.id == selected)[0].sentiment)
             setChartData(
             {
         labels: ['happy', 'angry', 'surprise', 'sad', 'fear'],
         datasets: [{
             label: '# of Votes',
-            data: state.filter(el => el.id = selected)[0].personality,
+            data: state.filter(el => el.id == selected)[0].sentiment,
             // data: [3,5,6,7,8],
             backgroundColor: [
                 "rgba(255, 99, 132, 0.5)",
