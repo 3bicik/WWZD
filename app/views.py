@@ -3,10 +3,12 @@ from django.http import HttpResponse
 
 from rest_framework import generics
 
-from .models import Character, Line
-from .serializers import CharacterSerializer, LineSerializer
+# from .models import Character, Line
+from .models import Character
+# from .serializers import CharacterSerializer, LineSerializer
+from .serializers import CharacterSerializer
 from .data_loader import load_csv_to_database
-from .text_to_sentiment import predict
+from .text_to_sentiment import predict, pred
 
 # Create your views here.
 def home(request):
@@ -29,11 +31,11 @@ class DetailCharacter(generics.RetrieveUpdateDestroyAPIView):
     queryset = Character.objects.all()
     serializer_class = CharacterSerializer
     
-class ListLines(generics.ListCreateAPIView):
-    queryset = Line.objects.all()
-    serializer_class = LineSerializer
+# class ListLines(generics.ListCreateAPIView):
+#     queryset = Line.objects.all()
+#     serializer_class = LineSerializer
 
 
-class DetailLine(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Line.objects.all()
-    serializer_class = LineSerializer
+# class DetailLine(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Line.objects.all()
+#     serializer_class = LineSerializer

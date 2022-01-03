@@ -1,8 +1,9 @@
 import pandas
-from .models import Character, Line
+# from .models import Character, Line
+from .models import Character
 
 def load_csv_to_database():
-    Line.objects.all().delete()
+    # Line.objects.all().delete()
     Character.objects.all().delete()
     data_frame = pandas.read_csv('data/simpsons_dataset.csv')
     print(data_frame.size)
