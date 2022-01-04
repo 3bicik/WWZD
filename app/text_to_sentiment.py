@@ -15,7 +15,7 @@ MAX_SEQUENCE_LENGTH = 30 # max length of text (words) including padding
 model = keras.models.load_model("text_to_sentiment/checkpoint-0.6017.h5")
 
 classes = ["Happy", "Sad", "Love", "Anger"]
-
+coordinates = ["X", "Y"]
 
 def prep_lines_dataframe():
     lines = pandas.read_csv('data/simpsons_dataset.csv')
