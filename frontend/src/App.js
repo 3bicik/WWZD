@@ -14,7 +14,7 @@ function App() {
     const [selected, setSelected] = useState(0  )
     const [chartData, setChartData] = useState(null)
 
-    const labels = ["Neutral", "Happy", "Sad", "Love", "Anger"]
+    const labels = ["Happy", "Sad", "Love", "Anger"]
 
 
 

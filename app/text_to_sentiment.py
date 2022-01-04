@@ -14,12 +14,12 @@ MAX_SEQUENCE_LENGTH = 30 # max length of text (words) including padding
 
 model = keras.models.load_model("text_to_sentiment/checkpoint-0.6017.h5")
 
-classes = ["Neutral", "Happy", "Sad", "Love", "Anger"]
+classes = ["Happy", "Sad", "Love", "Anger"]
 
 
 def prep_lines_dataframe():
     lines = pandas.read_csv('data/simpsons_dataset.csv')
-    sentiment = numpy.zeros((len(lines),5))
+    sentiment = numpy.zeros((len(lines),4))
     lines['sentiment'] = sentiment.tolist()
     lines['raw_character_text'] = lines['raw_character_text'].astype(str)
     lines['spoken_words'] = lines['spoken_words'].astype(str)
@@ -41,7 +41,7 @@ def process_data(lines):
 
 def calculate_averages(lines, threshold):
     name_temp = ''
-    vec_temp = numpy.zeros(5)
+    vec_temp = numpy.zeros(len(lines['sentiment']))
     times = 0
 
     for index, row in lines.sort_values(by=['raw_character_text']).iterrows():
@@ -58,22 +58,51 @@ def calculate_averages(lines, threshold):
             vec_temp = row['sentiment']
             times = 1
 
+def calculate_personality(lines, threshold):
+    name_temp = ''
+    vec_temp = numpy.zeros(len(lines['sentiment']))
+    times = 0
+
+    for index, row in lines.sort_values(by=['raw_character_text']).iterrows():
+        if(index == 0):
+            name_temp = row['raw_character_text']
+        
+        if(row['raw_character_text'] == name_temp):
+            pred = row['sentiment'].argmax(axis=-1)
+            pred_prob = row['sentiment'][pred]
+            vec_temp[pred] += pred_prob**2
+            # vec_temp += row['sentiment']
+            times += 1
+        else:
+            if(times >= threshold):
+                Character(name=name_temp, sentiment=vec_temp/times, number_of_lines=times).save()
+            name_temp = row['raw_character_text']
+            vec_temp = numpy.zeros(4)
+            pred = row['sentiment'].argmax(axis=-1)
+            pred_prob = row['sentiment'][pred]
+            vec_temp[pred] += pred_prob**2
+            # vec_temp = row['sentiment']
+            times = 1
+
+
 
 def predict():
     lines = prep_lines_dataframe()
     y_prob = process_data(lines)
 
     for n, prediction in enumerate(y_prob):
+        prediction = numpy.delete(prediction, 0, 0)
         lines.at[n, 'sentiment'] = prediction
 
-    calculate_averages(lines.sort_values(by=['raw_character_text']), 200)
+    calculate_personality(lines.sort_values(by=['raw_character_text']), 200)
 
 def sample_predict():
     sample_lines = prep_lines_dataframe().head(200)
     y_prob = process_data(sample_lines)
 
     for n, prediction in enumerate(y_prob):
+        prediction = numpy.delete(prediction, 0, 0)
         sample_lines.at[n, 'sentiment'] = prediction
 
-    calculate_averages(sample_lines.sort_values(by=['raw_character_text']), 5)
+    calculate_personality(sample_lines.sort_values(by=['raw_character_text']), 5)
 
