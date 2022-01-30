@@ -27,6 +27,16 @@ def prep_lines_dataframe():
 
     return lines
 
+def prep_episode_dataframe(filename):
+    lines = pandas.read_csv(f'data/csv/{filename}.csv')
+    sentiment = numpy.zeros((len(lines),2))
+    lines['sentiment'] = sentiment.tolist()
+    lines['raw_character_text'] = lines['raw_character_text'].astype(str)
+    lines['spoken_words'] = lines['spoken_words'].astype(str)
+    lines['sentiment'] = lines['sentiment'].astype(object)
+
+    return lines
+
 def process_data(lines):
     with open('text_to_sentiment/tokenizer.pickle', 'rb') as handle:
         tokenizer = pickle.load(handle)
@@ -97,6 +107,16 @@ def predict():
 
 def sample_predict():
     sample_lines = prep_lines_dataframe().head(200)
+    y_prob = process_data(sample_lines)
+
+    for n, prediction in enumerate(y_prob):
+        prediction = numpy.delete(prediction, 0, 0)
+        sample_lines.at[n, 'sentiment'] = prediction
+
+    calculate_personality(sample_lines.sort_values(by=['raw_character_text']), 5)
+
+def pred(filename):
+    sample_lines = prep_episode_dataframe(filename)
     y_prob = process_data(sample_lines)
 
     for n, prediction in enumerate(y_prob):
