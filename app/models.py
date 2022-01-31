@@ -5,8 +5,7 @@ from django.db import models
 
 class Character(models.Model):
 	name = models.TextField()
-	# sentiment = ArrayField(models.FloatField(),size=5)
-	sentiment = models.TextField()
+	data = models.TextField()
 	number_of_lines = models.TextField()
 
 	def __str__(self):

@@ -6,7 +6,7 @@ class CharacterSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'name',
-            'sentiment',
+            'data',
             'number_of_lines'
         )
         model = Character

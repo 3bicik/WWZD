@@ -19,21 +19,21 @@ coordinates = ["X", "Y"]
 
 def prep_lines_dataframe():
     lines = pandas.read_csv('data/simpsons_dataset.csv')
-    sentiment = numpy.zeros((len(lines),2))
-    lines['sentiment'] = sentiment.tolist()
+    data = numpy.zeros((len(lines),2))
+    lines['data'] = data.tolist()
     lines['raw_character_text'] = lines['raw_character_text'].astype(str)
     lines['spoken_words'] = lines['spoken_words'].astype(str)
-    lines['sentiment'] = lines['sentiment'].astype(object)
+    lines['data'] = lines['data'].astype(object)
 
     return lines
 
 def prep_episode_dataframe(filename):
     lines = pandas.read_csv(f'data/csv/{filename}.csv')
-    sentiment = numpy.zeros((len(lines),2))
-    lines['sentiment'] = sentiment.tolist()
+    data = numpy.zeros((len(lines),2))
+    lines['data'] = data.tolist()
     lines['raw_character_text'] = lines['raw_character_text'].astype(str)
     lines['spoken_words'] = lines['spoken_words'].astype(str)
-    lines['sentiment'] = lines['sentiment'].astype(object)
+    lines['data'] = lines['data'].astype(object)
 
     return lines
 
@@ -59,8 +59,8 @@ def calculate_personality(lines, threshold):
             name_temp = row['raw_character_text']
         
         if(row['raw_character_text'] == name_temp):
-            pred = row['sentiment'].argmax(axis=-1)
-            pred_prob = row['sentiment'][pred]
+            pred = row['data'].argmax(axis=-1)
+            pred_prob = row['data'][pred]
 
             if(pred==0):
                 vec_temp[0] += pred_prob**2
@@ -71,15 +71,15 @@ def calculate_personality(lines, threshold):
             if(pred==3):
                 vec_temp[1] -= pred_prob**2
 
-            # vec_temp += row['sentiment']
+            # vec_temp += row['data']
             times += 1
         else:
             if(times >= threshold):
-                Character(name=name_temp, sentiment=vec_temp/times, number_of_lines=times).save()
+                Character(name=name_temp, data=vec_temp/times, number_of_lines=times).save()
             name_temp = row['raw_character_text']
             vec_temp = numpy.zeros(2)
-            pred = row['sentiment'].argmax(axis=-1)
-            pred_prob = row['sentiment'][pred]
+            pred = row['data'].argmax(axis=-1)
+            pred_prob = row['data'][pred]
             
             if(pred==0):
                 vec_temp[0] += pred_prob**2
@@ -90,9 +90,8 @@ def calculate_personality(lines, threshold):
             if(pred==3):
                 vec_temp[1] -= pred_prob**2
 
-            # vec_temp = row['sentiment']
+            # vec_temp = row['data']
             times = 1
-
 
 
 def predict():
@@ -101,7 +100,7 @@ def predict():
 
     for n, prediction in enumerate(y_prob):
         prediction = numpy.delete(prediction, 0, 0)
-        lines.at[n, 'sentiment'] = prediction
+        lines.at[n, 'data'] = prediction
 
     calculate_personality(lines.sort_values(by=['raw_character_text']), 200)
 
@@ -111,7 +110,7 @@ def sample_predict():
 
     for n, prediction in enumerate(y_prob):
         prediction = numpy.delete(prediction, 0, 0)
-        sample_lines.at[n, 'sentiment'] = prediction
+        sample_lines.at[n, 'data'] = prediction
 
     calculate_personality(sample_lines.sort_values(by=['raw_character_text']), 5)
 
@@ -121,7 +120,7 @@ def pred(filename):
 
     for n, prediction in enumerate(y_prob):
         prediction = numpy.delete(prediction, 0, 0)
-        sample_lines.at[n, 'sentiment'] = prediction
+        sample_lines.at[n, 'data'] = prediction
 
     calculate_personality(sample_lines.sort_values(by=['raw_character_text']), 5)
 
