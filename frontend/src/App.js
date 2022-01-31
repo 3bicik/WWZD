@@ -21,8 +21,8 @@ function App() {
 
 
     useEffect(() =>{
-        axios.get('http://127.0.0.1:8000/app/characters/').then(res =>{
-            console.log(res.data)
+        axios.get('http://127.0.0.1:8000/app/s01e01/').then(res =>{
+            console.log('from API to state ->', res.data)
             setState(res.data)
                     // series.push(res.data[0])
             }
@@ -34,9 +34,9 @@ function App() {
 
         const result = state.map(el => {
 
-            const arr = el.data.replace('"', '').replace(' ', ',').replace('[', '').replace(']', '')
+            const arr = el.fields.data.replace('"', '').replace(' ', ',').replace('[', '').replace(']', '')
             return {
-                name: el.name,
+                name: el.fields.name,
                 data: arr.split(',')
             }
 
@@ -50,28 +50,13 @@ function App() {
     function srcSelect(state){
 
         const elements = state.map(el => {
-            return [`../imgs/${el.name}.png`]
+            return [`../imgs/${el.fields.name}.png`]
         })
 
         console.log('elements', elements)
         return elements
     }
 
-    function xMinNormalized(){
-        return
-    }
-
-    function xMaxNormalized(){
-        return
-    }
-
-    function yMinNormalized(){
-        return
-    }
-
-    function yMaxNormalized(){
-        return
-    }
 
     // function normalize(){
     //
@@ -130,8 +115,9 @@ function App() {
         colors: ['#056BF6', '#D2376A'],
         xaxis: {
           tickAmount: 7,
-          min: -1,
-          max: 1,
+            range: 2,
+          min: 0,
+          max: 2,
           title: {
               text: '<- Sad ------- Happy ->'
           },
