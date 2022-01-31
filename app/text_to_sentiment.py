@@ -49,7 +49,7 @@ def process_data(lines):
     return model.predict(data_test, verbose='1')
 
 
-def calculate_personality(lines, threshold):
+def calculate_personality(lines):
     name_temp = ''
     vec_temp = numpy.zeros(2)
     times = 0
@@ -74,8 +74,7 @@ def calculate_personality(lines, threshold):
             # vec_temp += row['data']
             times += 1
         else:
-            if(times >= threshold):
-                Character(name=name_temp, data=vec_temp/times, number_of_lines=times).save()
+            Character(name=name_temp, data=vec_temp/times, number_of_lines=times).save()
             name_temp = row['raw_character_text']
             vec_temp = numpy.zeros(2)
             pred = row['data'].argmax(axis=-1)
@@ -102,7 +101,7 @@ def predict():
         prediction = numpy.delete(prediction, 0, 0)
         lines.at[n, 'data'] = prediction
 
-    calculate_personality(lines.sort_values(by=['raw_character_text']), 200)
+    calculate_personality(lines.sort_values(by=['raw_character_text']))
 
 def sample_predict():
     sample_lines = prep_lines_dataframe().head(200)
@@ -112,7 +111,7 @@ def sample_predict():
         prediction = numpy.delete(prediction, 0, 0)
         sample_lines.at[n, 'data'] = prediction
 
-    calculate_personality(sample_lines.sort_values(by=['raw_character_text']), 5)
+    calculate_personality(sample_lines.sort_values(by=['raw_character_text']))
 
 def pred(filename):
     sample_lines = prep_episode_dataframe(filename)
@@ -122,5 +121,5 @@ def pred(filename):
         prediction = numpy.delete(prediction, 0, 0)
         sample_lines.at[n, 'data'] = prediction
 
-    calculate_personality(sample_lines.sort_values(by=['raw_character_text']), 5)
+    calculate_personality(sample_lines.sort_values(by=['raw_character_text']))
 
