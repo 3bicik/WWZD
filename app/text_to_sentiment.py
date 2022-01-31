@@ -57,6 +57,8 @@ def calculate_personality(lines):
     for index, row in lines.sort_values(by=['raw_character_text']).iterrows():
         if(index == 0):
             name_temp = row['raw_character_text']
+        elif(index == len(lines) - 1):
+            Character(name=name_temp, data=vec_temp/times, number_of_lines=times).save()
         
         if(row['raw_character_text'] == name_temp):
             pred = row['data'].argmax(axis=-1)
