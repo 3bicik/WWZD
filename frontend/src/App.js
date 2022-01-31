@@ -10,66 +10,112 @@ import Chart from 'react-apexcharts'
 
 function App() {
 
-    const [state, setState] = useState(null)
-    const [selected, setSelected] = useState(0  )
-    const [chartData, setChartData] = useState(null)
+    const [state, setState] = useState([])
+    // const [arr, setArr] = useState(null)
+    // const [xMin, setXMin] = useState(100)
+    // const [xMax, setXMax] = useState(-100)
+    // const [yMin, setYMin] = useState(100)
+    // const [yMax, setYMax] = useState(-100)
 
     const labels = ["Happy", "Sad", "Love", "Anger"]
-
 
 
     useEffect(() =>{
         axios.get('http://127.0.0.1:8000/app/characters/').then(res =>{
             console.log(res.data)
             setState(res.data)
+                    // series.push(res.data[0])
             }
         )
-    //     if(state && selected){
-    //         console.log('1', state.filter(el => el.id == selected)[0].sentiment)
-    //         setChartData(
-    //         {
-    //     labels: ["Neutral", "Happy", "Sad", "Love", "Anger"],
-    //     datasets: [{
-    //         label: '# of Votes',
-    //         data: state.filter(el => el.id == selected)[0].sentiment,
-    //         // data: [3,5,6,7,8],
-    //         backgroundColor: [
-    //             "rgba(255, 99, 132, 0.5)",
-    //             "rgba(54, 162, 235, 0.5)",
-    //             "rgba(255, 206, 86, 0.5)",
-    //             "rgba(75, 192, 192, 0.5)",
-    //             "rgba(153, 102, 255, 0.5)",
-    //         ],
-    //         borderWidth: 1,
-    //     }]
-    // }
-    //     )}
+
     },[])
+
+    function parser(state){
+
+        const result = state.map(el => {
+
+            const arr = el.data.replace('"', '').replace(' ', ',').replace('[', '').replace(']', '')
+            return {
+                name: el.name,
+                data: arr.split(',')
+            }
+
+        })
+
+        console.log('result from function', result)
+        // setArr(result)
+        return result
+    }
+
+    function srcSelect(state){
+
+        const elements = state.map(el => {
+            return [`../imgs/${el.name}.png`]
+        })
+
+        console.log('elements', elements)
+        return elements
+    }
+
+    function xMinNormalized(){
+        return
+    }
+
+    function xMaxNormalized(){
+        return
+    }
+
+    function yMinNormalized(){
+        return
+    }
+
+    function yMaxNormalized(){
+        return
+    }
+
+    // function normalize(){
+    //
+    //     let xMin = 100
+    //     let xMax = -100
+    //     let yMin = 100
+    //     let yMax = -100
+    //
+    //     for(let i=0; i<arr.length; i++){
+    //         if(arr.data[0] > xMax){
+    //             console.log('tutaj1?')
+    //             xMax = arr.data[0]
+    //         }else if(arr.data[0] < xMin){
+    //             console.log('tutaj2?')
+    //             xMin = arr.data[0]
+    //         }
+    //
+    //         if(arr.data[1] > yMax){
+    //             yMax = arr.data[1]
+    //         }else if(arr.data[1] < yMin){
+    //             yMin = arr.data[1]
+    //         }
+    //     }
+    //
+    //     // console.log('cvsdvasdvasd', xMin)
+    //
+    //     // setXMin(xMin)
+    //     // setXMax(xMax)
+    //     // setYMin(yMin)
+    //     // setYMax(yMax)
+    // }
+
+    // arr && normalize()
+    // console.log('1', xMin)
+    // console.log('2', xMax)
+    // console.log('3')
+    // console.log('4')
 
         console.log({state})
         const chartSettings = {
-
-      series: [{
-        name: 'Lisa Simpson',
-        data: [
-          [0.3, 0.4],
-        ]
-      }, {
-        name: 'Homer Simpson',
-        data: [
-          [-0.6, 0.14],
-        ]
-      },
-      {
-        name: 'Marge Simpson',
-        data: [
-          [0.7, -0.64],
-        ]
-      }
-      ],
+        series: parser(state),
       options: {
         chart: {
-          height: 350,
+          height: 450,
           type: 'scatter',
           animations: {
             enabled: false,
@@ -78,19 +124,28 @@ function App() {
             enabled: false,
           },
           toolbar: {
-            show: false
+            show: true
           }
         },
         colors: ['#056BF6', '#D2376A'],
         xaxis: {
           tickAmount: 7,
           min: -1,
-          max: 1
+          max: 1,
+          title: {
+              text: '<- Sad ------- Happy ->'
+          },
         },
         yaxis: {
           tickAmount: 7,
-            min: -1,
-            max: 1
+            min: -0.1,
+            max: 0.1,
+            title: {
+              text: '<- Angry ------- Loving ->'
+            },
+            crosshairs: {
+              show: true
+            }
         },
         markers: {
           size: 20
@@ -99,7 +154,7 @@ function App() {
           type: 'image',
           // opacity: 1,
           image: {
-            src: ['../Lisa-Simpson-icon.png', '../Homer-Simpson-03-Beer-icon.png', "../Marge-Simpson-icon.png"],
+            src: srcSelect(state),
             width: 40,
             height: 40
           }
@@ -128,16 +183,16 @@ function App() {
         <div className="App">
             <div className='container'>
                 <div className="row">
-                    <div className='col list-characters'>
-                        <div className="list-group">
-                            {state.map((el) => {
-                                return (<button type="button" key={el.id} onClick={() => setSelected(el.id)}
-                                                className="list-group-item list-group-item-action align-self-center">
-                                    {el.name}
-                                </button>)
-                            })}
-                        </div>
-                    </div>
+                    {/*<div className='col list-characters'>*/}
+                    {/*    <div className="list-group">*/}
+                    {/*        {state.map((el) => {*/}
+                    {/*            return (<button type="button" key={el.id} onClick={() => setSelected(el.id)}*/}
+                    {/*                            className="list-group-item list-group-item-action align-self-center">*/}
+                    {/*                {el.name}*/}
+                    {/*            </button>)*/}
+                    {/*        })}*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                     <div className='col align-middle'>
                         <Chart options={chartSettings.options} series={chartSettings.series} type="scatter" height={550}/>
                         {/*{console.log('2', chartData)}*/}
