@@ -100,7 +100,7 @@ function App() {
         series: parser(state),
       options: {
         chart: {
-          height: 450,
+          height: 650,
           type: 'scatter',
           animations: {
             enabled: false,
@@ -124,8 +124,8 @@ function App() {
         },
         yaxis: {
           tickAmount: 7,
-            min: -0.1,
-            max: 0.1,
+            min: -0.18,
+            max: 0.15,
             title: {
               text: '<- Angry ------- Loving ->'
             },
@@ -180,7 +180,7 @@ function App() {
                     {/*    </div>*/}
                     {/*</div>*/}
                     <div className='col align-middle'>
-                        <Chart options={chartSettings.options} series={chartSettings.series} type="scatter" height={550}/>
+                        <Chart options={chartSettings.options} series={chartSettings.series} type="scatter" height={900}/>
                         {/*{console.log('2', chartData)}*/}
                         {/*{chartData ? <PolarArea data={chartData}/> : null}*/}
                     </div>
