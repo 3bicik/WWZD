@@ -11,6 +11,7 @@ import Chart from 'react-apexcharts'
 function App() {
 
     const [state, setState] = useState([])
+    const [currentEpisode, setCurrentEpisode] = useState("s01e01")
     // const [arr, setArr] = useState(null)
     // const [xMin, setXMin] = useState(100)
     // const [xMax, setXMax] = useState(-100)
@@ -18,17 +19,32 @@ function App() {
     // const [yMax, setYMax] = useState(-100)
 
     const labels = ["Happy", "Sad", "Love", "Anger"]
+    const episodes = [
+        's01e01',
+        's01e02',
+        's01e03',
+        's01e04',
+        's01e05',
+        's01e06',
+        's01e07',
+        's01e08',
+        's01e09',
+        's01e010',
+        's01e011',
+        's01e012',
+        's01e013',
+    ]
 
 
     useEffect(() =>{
-        axios.get('http://127.0.0.1:8000/app/s01e01/').then(res =>{
+        axios.get(`http://127.0.0.1:8000/app/${currentEpisode}/`).then(res =>{
             console.log('from API to state ->', res.data)
             setState(res.data)
                     // series.push(res.data[0])
             }
         )
 
-    },[])
+    },[currentEpisode])
 
     function parser(state){
 
@@ -100,21 +116,35 @@ function App() {
         series: parser(state),
       options: {
         chart: {
-          height: 650,
+          height: 600,
           type: 'scatter',
           animations: {
             enabled: false,
           },
           zoom: {
-            enabled: false,
+            enabled: true,
+              // type: 'x',
+              // autoScaleYaxis: true,
+              // zoomedArea: {
+              //   fill:{
+              //       color: '#90CAF9',
+              //       opacity: 0.4
+              //   },
+              //     stroke:{
+              //       color: '#0D47A1',
+              //         opacity: 0.4,
+              //         width: 1
+              //     }
+              // }
           },
           toolbar: {
             show: true
-          }
+          },
         },
         colors: ['#056BF6', '#D2376A'],
         xaxis: {
           tickAmount: 7,
+            tickPlacement: 'on',
             range: 2,
           min: 0,
           max: 2,
@@ -124,6 +154,7 @@ function App() {
         },
         yaxis: {
           tickAmount: 7,
+            tickPlacement: 'on',
             min: -0.18,
             max: 0.15,
             title: {
@@ -169,16 +200,16 @@ function App() {
         <div className="App">
             <div className='container'>
                 <div className="row">
-                    {/*<div className='col list-characters'>*/}
-                    {/*    <div className="list-group">*/}
-                    {/*        {state.map((el) => {*/}
-                    {/*            return (<button type="button" key={el.id} onClick={() => setSelected(el.id)}*/}
-                    {/*                            className="list-group-item list-group-item-action align-self-center">*/}
-                    {/*                {el.name}*/}
-                    {/*            </button>)*/}
-                    {/*        })}*/}
-                    {/*    </div>*/}
-                    {/*</div>*/}
+                    <div className='col-1 list-characters'>
+                        <div className="list-group">
+                            {episodes.map((el) => {
+                                return (<button type="button" key={el.id} onClick={() => setCurrentEpisode(el)}
+                                                className="list-group-item list-group-item-action align-self-center">
+                                    {el}
+                                </button>)
+                            })}
+                        </div>
+                    </div>
                     <div className='col align-middle'>
                         <Chart options={chartSettings.options} series={chartSettings.series} type="scatter" height={900}/>
                         {/*{console.log('2', chartData)}*/}
